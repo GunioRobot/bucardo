@@ -165,7 +165,7 @@ is_deeply($dbhA->selectall_arrayref('SELECT * FROM uniq_test_mcpk ORDER BY id1')
 $dbhA->rollback();
 $dbhB->rollback();
 
-# Try to replicate a row that will always fail to swap. 
+# Try to replicate a row that will always fail to swap.
 $bct->stop_bucardo();
 $dbhB->do(q{INSERT INTO uniq_test (id, field1, field2, field3) VALUES (123, 'peter', 'paul', 'mary')});
 $dbhB->commit();

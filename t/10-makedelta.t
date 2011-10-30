@@ -103,7 +103,7 @@ $dbhX->do(q{LISTEN bucardo_syncdone_makedeltasync_b});
 $dbhX->commit();
 # By this point, this sync will probably already have run, but we're kicking
 # it anyway so we can listen for its results and make *sure* it ran
-$bct->ctl('kick makedeltasync_b 0'); 
+$bct->ctl('kick makedeltasync_b 0');
 wait_for_notice($dbhX, 'bucardo_syncdone_makedeltasync_b', 5);
 is_deeply($dbhA->selectall_arrayref('SELECT * FROM makedelta ORDER BY id'),
   $dbhC->selectall_arrayref('SELECT * FROM makedelta ORDER BY id'),

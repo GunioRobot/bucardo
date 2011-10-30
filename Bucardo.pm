@@ -3007,7 +3007,7 @@ sub start_controller {
                                       WHERE     d.tablename = \$1::oid
                                       AND       d.txntime IN (
                                         SELECT txntime FROM bucardo.bucardo_track
-                                        WHERE tablename = \$1::oid 
+                                        WHERE tablename = \$1::oid
                                         AND txntime >= '$sync->{starttime}'
                                         AND targetdb IN (TARGETLIST)
                                         GROUP BY 1
@@ -6347,12 +6347,12 @@ http://bucardo.org/
 
 =head1 DESCRIPTION
 
-Bucardo is a Perl module that replicates Postgres databases using a combination 
+Bucardo is a Perl module that replicates Postgres databases using a combination
 of Perl, a custom database schema, Pl/Perlu, and Pl/Pgsql.
 
 Bucardo is unapologetically extremely verbose in its logging.
 
-Full documentation can be found on the website, or in the files that came with 
+Full documentation can be found on the website, or in the files that came with
 this distribution. See also the documentation for the bucardo_ctl program.
 
 =head1 DEPENDENCIES
@@ -6365,12 +6365,12 @@ this distribution. See also the documentation for the bucardo_ctl program.
 
 =head1 BUGS
 
-Bugs should be reported to bucardo-general@bucardo.org. A list of bugs can be found at 
+Bugs should be reported to bucardo-general@bucardo.org. A list of bugs can be found at
 http://bucardo.org/bugs.html
 
 =head1 CREDITS
 
-Bucardo was originally developed and funded by Backcountry.com, who have been using versions 
+Bucardo was originally developed and funded by Backcountry.com, who have been using versions
 of it in production since 2002. Jon Jensen <jon@endpoint.com> wrote the original version.
 
 =head1 AUTHOR

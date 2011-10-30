@@ -11,7 +11,7 @@ profile-strictness = quiet
 ##
 
 [-ControlStructures::ProhibitMutatingListFunctions]
-[-Subroutines::ProhibitNestedSubs] 
+[-Subroutines::ProhibitNestedSubs]
 [-ValuesAndExpressions::ProhibitAccessOfPrivateData]
 
 ##

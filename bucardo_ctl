@@ -1634,7 +1634,7 @@ sub get_detailed_syncs {
 
 	## We want information about the last time it ran successfully
 	$SQL = qq{
-SELECT *, 
+SELECT *,
 TO_CHAR(ended,'$DATEFORMAT') AS last_ended_date,
 TO_CHAR(aborted,'$DATEFORMAT') AS last_aborted_date,
 round(extract(epoch FROM ended-started)) AS total_time_ended,
@@ -4196,7 +4196,7 @@ sub domain_exists {
 
 	## Checks if a domain exists. Returns 0 or 1
 	my ($schema,$name) = @_;
-	my $SQL = 
+	my $SQL =
 		  q{SELECT count(*) FROM pg_catalog.pg_type t }
 		. q{JOIN pg_namespace n ON (n.oid = t.typnamespace) }
 		. q{WHERE t.typtype = 'd' AND n.nspname = ? AND t.typname = ?};
@@ -5035,7 +5035,7 @@ sub upgrade {
 	## Check that object comments exist and match
 	for my $row (@comlist) {
 		my ($type,$schema,$relation,$comment,$full) = @$row;
-		my $current_comment = 
+		my $current_comment =
 			$type eq 'table' ? table_comment($schema,$relation)
 			: $type eq 'domain' ? domain_comment($schema,$relation)
 			: 'Unkonwn type';
@@ -5764,8 +5764,8 @@ This document describes version 4.5.0 of bucardo_ctl
 
 =head1 DESCRIPTION
 
-The bucardo_ctl script is the main interaction to a running Bucardo instance. It can 
-be used to start and stop Bucardo, add new items, kick syncs, and even install and 
+The bucardo_ctl script is the main interaction to a running Bucardo instance. It can
+be used to start and stop Bucardo, add new items, kick syncs, and even install and
 upgrade Bucardo itself. For more complete documentation, please view the wiki at:
 
 http://bucardo.org/
@@ -5778,9 +5778,9 @@ http://bucardo.org/
 
 Usage: ./bucardo_ctl install
 
-Attempts to install the Bucardo schema from the file 'bucardo.schema' into an existing 
+Attempts to install the Bucardo schema from the file 'bucardo.schema' into an existing
 Postgres cluster. The user 'bucardo' and database 'bucardo' will be created first as needed.
-This is an interactive installer, but you can supply the following values from the command 
+This is an interactive installer, but you can supply the following values from the command
 line:
 
 =over 2
@@ -5799,41 +5799,41 @@ line:
 
 Usage: ./bucardo_ctl upgrade
 
-Upgrades an existing Bucardo installation to the current version of the bucardo_ctl script. 
-Requires that the bucardo_ctl script and the bucardo.schema file be the same version. All 
-changes should be backwards compatible, but you may need to re-validate existing scripts 
+Upgrades an existing Bucardo installation to the current version of the bucardo_ctl script.
+Requires that the bucardo_ctl script and the bucardo.schema file be the same version. All
+changes should be backwards compatible, but you may need to re-validate existing scripts
 to make sure changes get propagated to all databases.
 
 =item B<start>
 
 Usage: ./bucardo_ctl start "Reason --name"
 
-Restarts Bucardo cleanly by first issuing the equivalent of a stop to ask any existing Bucardo 
-processes to exit, and then starting a new Bucardo MCP process. A short reason and name should 
-be provided - these are logged in the reason_file file and sent in the email sent when Bucardo 
+Restarts Bucardo cleanly by first issuing the equivalent of a stop to ask any existing Bucardo
+processes to exit, and then starting a new Bucardo MCP process. A short reason and name should
+be provided - these are logged in the reason_file file and sent in the email sent when Bucardo
 has been started up.
 
-Before attempting to kill any old processes, a ping command with a timeout of 5 seconds is issued. 
-If this returns successfully (indicating an active MCP process already running), the script will 
+Before attempting to kill any old processes, a ping command with a timeout of 5 seconds is issued.
+If this returns successfully (indicating an active MCP process already running), the script will
 exit with a return value of 2.
 
 =item B<stop>
 
 Usage: ./bucardo_ctl stop "Reason --name"
 
-Forces Bucardo to quit by creating a stop file which all MCP, CTL, and KID processes should 
-detect and cause them to exit. Note that active syncs will not exit right away, as they 
-will not look for the stop file until they have finished their current run. Typically, 
-you should scan the list of processes after running this program to make sure that all Bucardo 
-processes have stopped. One should also provide a reason for issuing the stop - usually 
-this is a short explanation and your name. This is logged in the reason_file file and 
+Forces Bucardo to quit by creating a stop file which all MCP, CTL, and KID processes should
+detect and cause them to exit. Note that active syncs will not exit right away, as they
+will not look for the stop file until they have finished their current run. Typically,
+you should scan the list of processes after running this program to make sure that all Bucardo
+processes have stopped. One should also provide a reason for issuing the stop - usually
+this is a short explanation and your name. This is logged in the reason_file file and
 is also used by Bucardo when it exits and sends out mail about its death.
 
 =item B<list>
 
 Usage: ./bucardo_ctl list <type> <regex>
 
-Lists summary information about databases, tables, sequences, syncs, or herds. Adding anything 
+Lists summary information about databases, tables, sequences, syncs, or herds. Adding anything
 after the type will look up all matching entries.
 
 =item B<add>
@@ -5864,35 +5864,35 @@ supported object types (you'll still need to add things like the mappings betwee
 
 Usage:  remove <item_type> <item_name>
 
-Removes one or more items from the Bucardo database. Valid item types are database, 
+Removes one or more items from the Bucardo database. Valid item types are database,
 dbgroup, herd, sync, table, and sequence.
 
 =item B<kick>
 
 Usage: ./bucardo_ctl kick <syncname(s)> [timeout]
 
-Tells one or more named syncs to fire as soon as possible. Note that this simply sends a request that 
-the sync fire: it may not start right away if the same sync is already running, or if the source or 
-target database has exceeded the number of allowed Bucardo connections. If the final argument is a 
-number, it is treated as a timeout. If this number is zero, the bucardo_ctl command will not return 
-until the sync has finished. For any other number, the sync will wait at most that number of seconds. 
-If any sync has not finished before the timeout, a false value is returned. In all other cases, a 
+Tells one or more named syncs to fire as soon as possible. Note that this simply sends a request that
+the sync fire: it may not start right away if the same sync is already running, or if the source or
+target database has exceeded the number of allowed Bucardo connections. If the final argument is a
+number, it is treated as a timeout. If this number is zero, the bucardo_ctl command will not return
+until the sync has finished. For any other number, the sync will wait at most that number of seconds.
+If any sync has not finished before the timeout, a false value is returned. In all other cases, a
 true value is returned.
 
-If a timeout is given, the total completion time in seconds is also displayed. If the sync is going to 
-multiple targets, the time that each target takes from the start of the kick is also shown as each 
+If a timeout is given, the total completion time in seconds is also displayed. If the sync is going to
+multiple targets, the time that each target takes from the start of the kick is also shown as each
 target finishes.
 
 =item B<reload_config>
 
-Forces Bucardo to reload the bucardo_config file, and then restart all processes to ensure that the new 
+Forces Bucardo to reload the bucardo_config file, and then restart all processes to ensure that the new
 information is loaded.
 
 =item B<show>
 
 Usage: ./bucardo_ctl show <all|setting1> [setting2..]
 
-Shows the current values in the bucardo_config table. Use the keyword 'all' to see all the settings, or 
+Shows the current values in the bucardo_config table. Use the keyword 'all' to see all the settings, or
 specify one or more search terms.
 
 =item B<set>
@@ -5903,15 +5903,15 @@ Sets one or more items inside the bucardo_config table. Setting names are case-i
 
 =item B<ping>
 
-Sends a ping notice to the MCP process to see if it will respond. By default, it will wait 15 seconds. A 
-numeric argument will change this timeout. Using a 0 as the timeout indicates waiting forever. If a response 
+Sends a ping notice to the MCP process to see if it will respond. By default, it will wait 15 seconds. A
+numeric argument will change this timeout. Using a 0 as the timeout indicates waiting forever. If a response
 was returned, the program will exit with a value of 0. If it times out, the value will be 1.
 
 =item B<status>
 
 Usage: ./bucardo_ctl status [syncname(s)] [--sort=#] [--daysback=#] [--showdays]
 
-Shows the current status of all known syncs in a tabular format. If given one or more syncnames, 
+Shows the current status of all known syncs in a tabular format. If given one or more syncnames,
 shows detailed information for each one.
 
 When showing all syncs, the columns are:
@@ -5924,20 +5924,20 @@ The name of the sync
 
 =item 2. B<Type>
 
-The type of the sync. C<F> = fullcopy, C<S> = swap, C<P> = pushdelta. In addition, if a sync is overdue, a C<O!> will 
+The type of the sync. C<F> = fullcopy, C<S> = swap, C<P> = pushdelta. In addition, if a sync is overdue, a C<O!> will
 appear, and if it is expired, a C<E!> will appear.
 
 =item 3. B<State>
 
-The current status of this sync. If no sync is running, C<idle> will appear. If a sync has been requested, but has not 
-started yet, C<WAIT> will appear, along with how long since the sync was requested. If a sync is 
-currently running, C<RUN> will appear, followed by the amount of time the sync has been running, followed by which 
-target the sync is running against. Note that syncs running to more than one database at a time will only show 
+The current status of this sync. If no sync is running, C<idle> will appear. If a sync has been requested, but has not
+started yet, C<WAIT> will appear, along with how long since the sync was requested. If a sync is
+currently running, C<RUN> will appear, followed by the amount of time the sync has been running, followed by which
+target the sync is running against. Note that syncs running to more than one database at a time will only show
 the one most recently started.
 
 =item 4. B<PID>
 
-The PID of the current sync's controller (CTL). Note that if this is not a persistent sync and the state is C<idle>, 
+The PID of the current sync's controller (CTL). Note that if this is not a persistent sync and the state is C<idle>,
 this is merely a historical record and does not represent an active process.
 
 =item 5. B<Last_good>
@@ -5965,25 +5965,25 @@ The amount of time the last failed sync took before it was aborted.
 
 =item B<activate> syncname [syncname2 syncname3 ...] [timeout]
 
-Activates one or more named syncs. If given a timeout argument, it will wait until it has received 
+Activates one or more named syncs. If given a timeout argument, it will wait until it has received
 confirmation from Bucardo that each sync has been successfully activated.
 
 =item B<deactivate> syncname [syncname2 syncname3 ...] [timeout]
 
-Deactivates one or more named syncs. If given a timeout argument, it will wait until it has received 
+Deactivates one or more named syncs. If given a timeout argument, it will wait until it has received
 confirmation from Bucardo that the sync has been successfully deactivated.
 
 =item B<message>
 
-Adds a message to the running Bucardo logs. This message will appear prefixed with "MESSAGE: ". If 
-Bucardo is not running, the message will go to the logs the next time Bucardo is running and someone 
+Adds a message to the running Bucardo logs. This message will appear prefixed with "MESSAGE: ". If
+Bucardo is not running, the message will go to the logs the next time Bucardo is running and someone
 adds another message.
 
 =back
 
 =head1 OPTIONS
 
-It is usually easier to set most of these options at the top of the script, or make an alias for them, 
+It is usually easier to set most of these options at the top of the script, or make an alias for them,
 as they will not change very often if at all.
 
 =over 4
@@ -6030,8 +6030,8 @@ How long to sleep, in seconds, between each retry attempt.
 
 =item B<--notimer>
 
-By default, kicks with a timeout argument give a running real-time summary of time elapsed by 
-using the backspace character. This may not be wanted if running a kick, for example, 
+By default, kicks with a timeout argument give a running real-time summary of time elapsed by
+using the backspace character. This may not be wanted if running a kick, for example,
 via a cronjob, so turning --notimer on will simply print the entire message without backspaces.
 
 =back
@@ -6048,17 +6048,17 @@ Sets how many days backwards to search the old 'q' logs for information. Default
 
 =item B<--showdays>
 
-Specifies whether or not do list the time interval with days, or simply show the hours. For example, 
+Specifies whether or not do list the time interval with days, or simply show the hours. For example,
 "3d 12h 6m 3s" vs. "48h 6m 3s"
 
 =item B<--compress>
 
-Specifies whether or not to compress the time interval by removing spaces. Mostly used to limit 
+Specifies whether or not to compress the time interval by removing spaces. Mostly used to limit
 the width of the 'status' display.
 
 =item B<--sort=#>
 
-Requests sorting of the 'status' output by one of the nine columns. Use a negative number to reverse 
+Requests sorting of the 'status' output by one of the nine columns. Use a negative number to reverse
 the sort order.
 
 =back
@@ -6076,17 +6076,17 @@ Only applicable when using ./bucardo_ctl start.
 
 =item B<--extraname=string>
 
-A short string that will be appended to the version string as output by the Bucardo process names. Mostly 
+A short string that will be appended to the version string as output by the Bucardo process names. Mostly
 useful for debugging.
 
 =item B<--debugfilesep>
 
-Forces creation of separate log files for each Bucardo process of the form "log.bucardo.X.Y", 
+Forces creation of separate log files for each Bucardo process of the form "log.bucardo.X.Y",
 where X is the type of process (MCP, CTL, or KID), and Y is the process ID.
 
 =item B<--debugsyslog>
 
-Sends all log messages to the syslog daemon. On by default. The facility used is controlled by 
+Sends all log messages to the syslog daemon. On by default. The facility used is controlled by
 the row "syslog_facility" in the bucardo_config table, and defaults to "LOG_LOCAL1".
 
 =item B<--debugfile>
@@ -6099,7 +6099,7 @@ Directory where the debug files should go.
 
 =item B<--debugname=string>
 
-Appends the given string to the end of the default debug file name, "log.bucardo". A dot is added 
+Appends the given string to the end of the default debug file name, "log.bucardo". A dot is added
 before the name as well, so a debugname of "rootdb" would produce a log file named "log.bucardo.rootdb".
 
 =item B<--cleandebugs>
@@ -6110,12 +6110,12 @@ Forces removal of all old debug files before running.
 
 =head1 FILES
 
-In addition to command-line configurations, you can put any options inside of a file. The file F<.bucardorc> in 
-the current directory will be used if found. If not found, then the file F<~/.bucardorc> will be used. Finally, 
-the file /etc/bucardorc will be used if available. The format of the file is option = value, one per line. Any 
-line starting with a '#' will be skipped. Any values loaded from a bucardorc file will be overwritten by 
-command-line options. All bucardorc files can be ignored by supplying a C<--no-bucardorc> argument. A specific 
-file can be forced with the C<--bucardorc=file> option; if this option is set, bucardo_ctl will refuse to run 
+In addition to command-line configurations, you can put any options inside of a file. The file F<.bucardorc> in
+the current directory will be used if found. If not found, then the file F<~/.bucardorc> will be used. Finally,
+the file /etc/bucardorc will be used if available. The format of the file is option = value, one per line. Any
+line starting with a '#' will be skipped. Any values loaded from a bucardorc file will be overwritten by
+command-line options. All bucardorc files can be ignored by supplying a C<--no-bucardorc> argument. A specific
+file can be forced with the C<--bucardorc=file> option; if this option is set, bucardo_ctl will refuse to run
 unless that file can be read.
 
 =head1 ENVIRONMENT VARIABLES
@@ -6124,7 +6124,7 @@ The bucardo_ctl script uses I<$ENV{HOME}> to look for a F<.bucardorc> file.
 
 =head1 BUGS
 
-The 'status' command does not yet return current information, and the start time in particular should be 
+The 'status' command does not yet return current information, and the start time in particular should be
 taken with a grain of salt.
 
 Bug reports and feature requests are always welcome, please visit http://bucardo.org or email bucardo-general@bucardo.org.

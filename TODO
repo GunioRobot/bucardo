@@ -5,8 +5,8 @@ These range the gamut from wildly speculative ideas to must-have features.
 
 - Have Bucardo do the cleanups based on PG version, rather than cronjobs
   (e.g. vacuum pg_listener, purge_bucardo_delta)
-- Implement "log shipping" for pushdelta slaves. This could be done by creating 
-  a SQL dump consisting of DELETE from <tab> WHERE pk IN (...); COPY <tab> 
+- Implement "log shipping" for pushdelta slaves. This could be done by creating
+  a SQL dump consisting of DELETE from <tab> WHERE pk IN (...); COPY <tab>
   FROM STDIN; ...
 - Death-level custom code hooks
 - Better conflict example in test suite, uses database handles
@@ -17,7 +17,7 @@ These range the gamut from wildly speculative ideas to must-have features.
 - Make bucardo_ctl use same algorithm as bucardo-report for grabbing sync history
 - Have bucardo_ctl give details on KILLED syncs while kicking
 - Address all XXX and TODO inside Bucardo.pm
-- Have a single table track current status of each sync/target combo. This would 
+- Have a single table track current status of each sync/target combo. This would
   allow the controller to do smarter things, and would make the reporting much faster
 - Add a pause mode
 - Add exception code for DELETE

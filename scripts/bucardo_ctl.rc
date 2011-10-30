@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# PROVIDE: bucardo_ctl 
-# REQUIRE: LOGIN postgresql 
+# PROVIDE: bucardo_ctl
+# REQUIRE: LOGIN postgresql
 # KEYWORD: shutdown
 #
 # bucardo_ctl_enable="YES"

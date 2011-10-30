@@ -283,10 +283,10 @@ ALTER TABLE bucardo.goat ADD CONSTRAINT custom_needs_pkey CHECK (customselect IS
 ALTER TABLE bucardo.goat ADD CONSTRAINT pkey_needs_type CHECK (pkey = '' OR pkeytype IS NOT NULL);
 
 ALTER TABLE bucardo.goat ADD CONSTRAINT standard_conflict
-  CHECK (((reltype <> 'table') OR (standard_conflict IS NULL)) OR (standard_conflict 
+  CHECK (((reltype <> 'table') OR (standard_conflict IS NULL)) OR (standard_conflict
   IN ('source','target','skip','random','latest','abort')));
 
-ALTER TABLE bucardo.goat ADD CONSTRAINT standard_conflict_sequence 
+ALTER TABLE bucardo.goat ADD CONSTRAINT standard_conflict_sequence
   CHECK (((reltype <> 'sequence') OR (standard_conflict IS NULL)) OR (standard_conflict
   IN ('source','target','skip','lowest','highest')));
 
@@ -326,7 +326,7 @@ CREATE TABLE bucardo.herd (
 COMMENT ON TABLE bucardo.herd IS $$Named group of tables or sequences from the goat table: used as the 'source' for syncs$$;
 
 --
--- Goats belong to zero or more herds. In most cases, they will 
+-- Goats belong to zero or more herds. In most cases, they will
 -- belong to a single herd if they are being replicated.
 --
 CREATE TABLE bucardo.herdmap (
@@ -523,7 +523,7 @@ CREATE INDEX q_stathelper ON bucardo.q(cdate, sync) WHERE ended IS NOT NULL;
 
 
 CREATE FUNCTION bucardo.bucardo_q()
-RETURNS TRIGGER 
+RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $bc$
 BEGIN
@@ -745,7 +745,7 @@ SECURITY DEFINER
 AS
 $bc$
 
-## Given the name of a db connection, construct the connection 
+## Given the name of a db connection, construct the connection
 ## string for it and then connect to it and log the attempt
 
 use strict; use warnings; use DBI;
@@ -1054,7 +1054,7 @@ $bc$
 
     ## Process the source herd
     $SQL = qq{
-        SELECT id, db, schemaname, tablename, pkey, pkeytype, reltype, 
+        SELECT id, db, schemaname, tablename, pkey, pkeytype, reltype,
                standard_conflict, ping AS goatping,
                pg_catalog.quote_ident(db)         AS safedb,
                pg_catalog.quote_ident(schemaname) AS safeschema,
@@ -1411,7 +1411,7 @@ $bc$
         }
 
         if (!$found{bc_schema}) {
-            $found{func0} = $found{func1} = $found{func2} = $found{func3} = 
+            $found{func0} = $found{func1} = $found{func2} = $found{func3} =
             $found{func4} = $found{func5} = 0;
         }
         else {
@@ -1574,7 +1574,7 @@ $bc$
                       AND trigger_type='triggerkick' };
             elog(DEBUG, "Running $SQL");
             $rv = spi_exec_query($SQL);
-                
+
             if (!$found{func0} or $force or $rv->{processed}) {
 
                 if ($rv->{processed}) {
@@ -1582,17 +1582,17 @@ $bc$
                     $custom_trigger_level = $rv->{rows}[0]{trigger_level};
                     $SQL = qq{
                         CREATE OR REPLACE FUNCTION bucardo."$custom_function_name"()
-                        RETURNS TRIGGER 
+                        RETURNS TRIGGER
                         LANGUAGE $rv->{rows}[0]{trigger_language}
                         AS \$notify\$
                     };
                     $SQL .= qq{ $rv->{rows}[0]{trigger_body} };
                     $SQL .= qq{ \$notify\$; };
-                } 
+                }
                 else {
                     $SQL = qq{
                         CREATE OR REPLACE FUNCTION bucardo."$func0"()
-                        RETURNS TRIGGER 
+                        RETURNS TRIGGER
                         LANGUAGE plpgsql
                         AS \$notify\$
                         BEGIN
@@ -1793,7 +1793,7 @@ $bc$
                 }
                 else {
                     my $x = 0;
-                    my $multicol = join ',' => map { s{timestamptz|timestamp|date|bytea}{text}; $x++; 
+                    my $multicol = join ',' => map { s{timestamptz|timestamp|date|bytea}{text}; $x++;
                         sprintf "(rowid%s::$_)", $x<2 ? '' : $x; } split (/\|/ => $pkeytype);
                     elog(DEBUG, "Creating index on $multicol");
                     $dbh->do(qq{CREATE INDEX "$index2" ON bucardo.bucardo_delta($multicol) WHERE tablename = $oid});
@@ -1816,9 +1816,9 @@ $bc$
             my $old = join ',' => map { qq{OLD."$_"::text} } @pkeys;
             my $clause = join ' OR ' => map { qq{OLD."$_" <> NEW."$_"} } @pkeys;
 
-            $SQL = qq{SELECT trigger_language,trigger_body FROM bucardo_custom_trigger 
-                      WHERE goat=$info->{id} 
-                      AND status='active' 
+            $SQL = qq{SELECT trigger_language,trigger_body FROM bucardo_custom_trigger
+                      WHERE goat=$info->{id}
+                      AND status='active'
                       AND trigger_type='delta' };
             elog(DEBUG, "Running $SQL");
             $rv = spi_exec_query($SQL);
@@ -1836,7 +1836,7 @@ $bc$
                 $SQL .= qq{ $rv->{rows}[0]{trigger_body} };
                 $SQL .= qq{ \$clone\$; };
                 run_sql($SQL,$dbh);
-            } 
+            }
             elsif (! $found{func1} and $pkeytype ne 'bytea') {
                 $SQL = qq{
                     CREATE OR REPLACE FUNCTION bucardo.$func1()
@@ -1907,7 +1907,7 @@ $bc$
                         trows BIGINT;
                     BEGIN
                         DELETE FROM bucardo.bucardo_delta
-                        USING 
+                        USING
                         (SELECT b.tablename AS tn, b.txntime AS tt FROM
                         (SELECT tablename, count(*) FROM bucardo.bucardo_delta_targets GROUP BY 1) AS a,
                         (SELECT tablename, txntime, count(*) FROM bucardo.bucardo_track GROUP BY 1,2) AS b
@@ -1953,22 +1953,22 @@ $bc$
                     ids_grp TEXT;
                     idnum TEXT;
                   BEGIN
-                  
+
                   -- Are we running in serializable mode?
                   SELECT INTO mymode current_setting('transaction_isolation');
                   IF (mymode <> 'serializable') THEN
                     RAISE EXCEPTION 'This function must be run in serializable mode';
                   END IF;
-                  
+
                   -- Grab the oid of this schema/table combo
                   SELECT INTO myoid
                     c.oid FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
                     WHERE nspname = \$1 AND relname = \$2;
-                  
+
                   IF NOT FOUND THEN
                     RAISE EXCEPTION 'No such table: %.%', \$1, \$2;
                   END IF;
-                  
+
                   ids_where = 'COALESCE(rowid,''NULL'') = COALESCE(id, ''NULL'')';
                   ids_sel = 'rowid AS id';
                   ids_grp = 'rowid';
@@ -1982,8 +1982,8 @@ $bc$
                       rnames = COALESCE(rnames || ' ', '') || rname ;
                       SELECT INTO idnum SUBSTRING(rname FROM '[[:digit:]]+');
                       IF idnum IS NOT NULL THEN
-                        ids_where = ids_where 
-                          || ' AND (' 
+                        ids_where = ids_where
+                          || ' AND ('
                           || rname
                           || ' = id'
                           || idnum
@@ -2002,8 +2002,8 @@ $bc$
                           || rname;
                       END IF;
                   END LOOP;
-                  
-                  myst = 'DELETE FROM bucardo.bucardo_delta 
+
+                  myst = 'DELETE FROM bucardo.bucardo_delta
                   USING (SELECT MAX(txntime) AS maxt, '||ids_sel||'
                          FROM bucardo.bucardo_delta
                          WHERE tablename = '||myoid||'
@@ -2011,18 +2011,18 @@ $bc$
                   WHERE tablename = '|| myoid || ' AND ' || ids_where ||' AND txntime <> maxt';
                   RAISE DEBUG 'Running %', myst;
                   EXECUTE myst;
-                  
+
                   GET DIAGNOSTICS drows := row_count;
-                  
+
                   myst = 'DELETE FROM bucardo.bucardo_track'
                     || ' WHERE NOT EXISTS (SELECT 1 FROM bucardo.bucardo_delta d WHERE d.txntime = bucardo_track.txntime)';
                   EXECUTE myst;
-                  
+
                   GET DIAGNOSTICS trows := row_count;
-                  
+
                   RETURN 'Compressed '||\$1||'.'||\$2||'. Rows deleted from bucardo_delta: '||drows||
                     ' Rows deleted from bucardo_track: '||trows;
-                  
+
                   END;
                   \$clone\$;
                 };
@@ -2040,7 +2040,7 @@ $bc$
                   \$clone\$;
                 };
                 run_sql($SQL,$dbh);
-                  
+
                 $SQL = qq{
                   CREATE OR REPLACE FUNCTION bucardo.bucardo_compress_delta(oid)
                   RETURNS TEXT
@@ -2053,7 +2053,7 @@ $bc$
                   \$clone\$;
                 };
                 run_sql($SQL,$dbh);
-                  
+
                 $SQL = qq{
                   CREATE OR REPLACE FUNCTION bucardo.bucardo_compress_delta()
                   RETURNS SETOF TEXT
@@ -2067,7 +2067,7 @@ $bc$
                 };
                 run_sql($SQL,$dbh);
             }
-                  
+
             if (! $found{func5}) {
                 $SQL = q{
                   CREATE OR REPLACE FUNCTION bucardo.bucardo_audit()
@@ -2120,7 +2120,7 @@ PERFORM set_config('search_path','bucardo,'
 -- If this table alredy exists in this session, drop it
 PERFORM 1 FROM information_schema.tables WHERE table_type = 'LOCAL TEMPORARY'
   AND table_name = 'bucardo_audit_delta_index';
-IF FOUND THEN 
+IF FOUND THEN
   DROP TABLE bucardo_audit_delta_index;
 END IF;
 CREATE TEMP TABLE bucardo_audit_delta_index AS
@@ -2139,7 +2139,7 @@ CREATE TEMP TABLE bucardo_audit_delta_index AS
 -- Gather a list of indexes for bucardo_track
 PERFORM 1 FROM information_schema.tables WHERE table_type = 'LOCAL TEMPORARY'
   AND table_name = 'bucardo_audit_track_index';
-IF FOUND THEN 
+IF FOUND THEN
   DROP TABLE bucardo_audit_track_index;
 END IF;
 CREATE TEMP TABLE bucardo_audit_track_index AS
@@ -2158,7 +2158,7 @@ CREATE TEMP TABLE bucardo_audit_track_index AS
 -- Gather a list of triggers that contain the string 'bucardo'
 PERFORM 1 FROM information_schema.tables WHERE table_type = 'LOCAL TEMPORARY'
   AND table_name = 'bucardo_audit_table_triggers';
-IF FOUND THEN 
+IF FOUND THEN
   DROP TABLE bucardo_audit_table_triggers;
 END IF;
 CREATE TEMP TABLE bucardo_audit_table_triggers AS
@@ -2210,7 +2210,7 @@ LOOP
   END IF;
 END LOOP;
 
--- Check for correct number of triggers on bucardo_delta for each table that has 
+-- Check for correct number of triggers on bucardo_delta for each table that has
 --     a bucardo_add_delta trigger
 --   Check that one exists for the rowid
 --   Check that one exists for the txntime
@@ -2416,7 +2416,7 @@ LOOP
    || '-- Unknown index on bucardo_delta: '
    || myrec.indexname;
   -- Show stats about it
-  FOR myrec2 IN 
+  FOR myrec2 IN
     SELECT
       pg_stat_get_blocks_fetched(myrec.indyoid) AS blocks_fetched,
       pg_stat_get_blocks_hit(myrec.indyoid) AS blocks_hit,
@@ -2824,7 +2824,7 @@ AS $bc$
 DECLARE
   myrec RECORD;
 BEGIN
-  FOR myrec IN 
+  FOR myrec IN
     SELECT quote_ident(db) || '.' || quote_ident(schemaname) || '.' || quote_ident(tablename) AS t
       FROM goat g
       WHERE NOT EXISTS (SELECT 1 FROM herdmap h WHERE h.goat = g.id)
@@ -2833,7 +2833,7 @@ BEGIN
       RETURN NEXT 'Not used in any herds: ' || myrec.t;
   END LOOP;
 
-  FOR myrec IN 
+  FOR myrec IN
     SELECT quote_ident(db) || '.' || quote_ident(schemaname) || '.' || quote_ident(tablename) AS t
       FROM goat g
       JOIN herdmap h ON h.goat = g.id
@@ -2843,7 +2843,7 @@ BEGIN
       RETURN NEXT 'Not used in source herd: ' || myrec.t;
   END LOOP;
 
-  FOR myrec IN 
+  FOR myrec IN
     SELECT quote_ident(db) || '.' || quote_ident(schemaname) || '.' || quote_ident(tablename) AS t
       FROM goat g
       JOIN herdmap h ON h.goat = g.id
